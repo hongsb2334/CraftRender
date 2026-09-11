@@ -1,0 +1,18 @@
+root = true
+
+# All files
+[*]
+indent_style = space
+
+# Xml files
+[*.xml]
+indent_size = 2
+
+# cpp
+[*.cpp]
+charset = utf-8-bom
+
+# header
+
+[*.h]
+charset = utf-8-bom
