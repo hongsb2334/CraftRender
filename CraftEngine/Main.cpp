@@ -4,7 +4,7 @@
 #if _DEBUG
 int main()
 {
-    return LaunchApplication(GetModuleHandle(nullptr));
+    return LaunchApplication();
 }
 #else 
 
@@ -16,6 +16,6 @@ int WINAPI WinMain(
     _In_ int nShowCmd
 )
 {
-    return LaunchApplication(hInstance);
+    return LaunchApplication();
 }
 #endif
