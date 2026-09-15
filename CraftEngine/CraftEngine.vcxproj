@@ -59,6 +59,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -77,6 +78,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>d3d11.lib;dxgi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Manifest>
       <EnableSegmentHeap>true</EnableSegmentHeap>
@@ -85,12 +87,15 @@
   <ItemGroup>
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Core\Win32Window.cpp" />
+    <ClCompile Include="Graphics\Renderer.cpp" />
     <ClCompile Include="LaunchApplication.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Win32Window.h" />
+    <ClInclude Include="Graphics\Renderer.h" />
+    <ClInclude Include="Interface\IMessageHandler.h" />
     <ClInclude Include="LaunchApplication.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

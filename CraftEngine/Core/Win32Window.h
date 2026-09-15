@@ -6,12 +6,16 @@
 
 namespace Craft
 {
+    //전방 선언
+    class IMessageHandler;
+
 	class Win32Window
 	{
 	public:
         Win32Window(
             uint32_t width = 1280,
             uint32_t height = 800,
+            IMessageHandler* messageHandler = nullptr,
             const std::wstring title = L"Craft Render Engine");
 
         ~Win32Window();
@@ -35,6 +39,10 @@ namespace Craft
         //클래스 이름/ 타이틀 이름
         std::wstring className = L"Craft_Render_Window_Class";
         std::wstring title;
+
+        //메시지 핸들러 객체
+        IMessageHandler* messageHandler = nullptr;
+
 	};
 }
 

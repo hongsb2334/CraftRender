@@ -27,6 +27,9 @@
     <ClCompile Include="Core\Engine.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Graphics\Renderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LaunchApplication.h">
@@ -36,6 +39,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Core\Engine.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Interface\IMessageHandler.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

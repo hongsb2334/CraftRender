@@ -1,9 +1,9 @@
 ﻿#include "Win32Window.h"
-
+#include <Interface/IMessageHandler.h>
 namespace Craft
 {
-    Win32Window::Win32Window(uint32_t width, uint32_t height, const std::wstring title) : 
-        width(width), height(height), title(title), instance(GetModuleHandle(nullptr))
+    Win32Window::Win32Window(uint32_t width, uint32_t height, IMessageHandler* messageHandler, const std::wstring title) :
+        width(width), height(height), title(title), messageHandler(messageHandler), instance(GetModuleHandle(nullptr))
     {
         //창 만들기
         // Register the window class.
@@ -51,7 +51,7 @@ namespace Craft
             nullptr,       // Parent window    
             nullptr,       // Menu
             instance,     // Instance handle
-            nullptr        // Additional application data
+            this        // Additional application data
         );
 
         if (!handle)
@@ -73,50 +73,37 @@ namespace Craft
     }
     LRESULT Win32Window::Win32MessageHandler(HWND window, UINT message, WPARAM wparam, LPARAM lparam)
     {
-        //엔진이 윈도우를 소유
-        //윈도우가 엔진에 접근하려면 인터페이스 사용, 상호 참조하는것은 좋지 않음
-        //메시지 처리
-        switch (message)
+        //생성 이벤트
+        if (message == WM_CREATE)
         {
-            //창 닫기 메시지 (x 버튼 누르면 발생)
-        case WM_CLOSE:
-        {
-            //창 객체 삭제
-            DestroyWindow(window);
-        }
-        return 0;
-        //창 삭제 이벤트 처리
-        case WM_DESTROY:
-        {
-            // 프로그램 종료 요청.(종료 메시지 발행) return 0; 에서의 0
-            PostQuitMessage(0);
-        }
-        return 0;
-
-        //ESC키 입력 처리
-        case WM_KEYDOWN:
-        {
-            //눌린 키가 ESC키인지 확인
-            if (wparam == VK_ESCAPE)
+            //윈도우 파라미터 설정
+            //생성할 때 넘겨줬던 추가 파라미터 가져오기
+            CREATESTRUCT* createstruct = reinterpret_cast<CREATESTRUCT*>(lparam);
+            if (createstruct)
             {
-                DestroyWindow(window);
+                //임시 저장
+                Win32Window* win32window = reinterpret_cast<Win32Window*>(createstruct->lpCreateParams);
+
+                if (win32window && win32window->messageHandler)
+                {
+                    SetWindowLongPtr(window, GWLP_USERDATA, (LONG_PTR)win32window);
+                }
             }
+
+            return 0;
         }
-        return 0;
-    
-        case WM_PAINT:
+        
+        //생성 이후의 이벤트 처리
+        Win32Window* win32window = reinterpret_cast<Win32Window*>(GetWindowLongPtr(window, GWLP_USERDATA));
+        if (win32window && win32window->messageHandler)
         {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(window, &ps);
-
-            // All painting occurs here, between BeginPaint and EndPaint.
-
-            FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
-
-            EndPaint(window, &ps);
+            //이벤트를 인터페이스를 통해서 전달
+            return win32window->messageHandler->HandleMessage(window, message, wparam, lparam);
+            
         }
-        return 0;
-        }
+
+        //방어 코드
         return DefWindowProc(window, message, wparam, lparam);
+
     }
 }
