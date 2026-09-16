@@ -20,6 +20,11 @@ namespace Craft
 
         ~Win32Window();
 
+        //getter
+        inline uint32_t GetWidth() const { return width; } 
+        inline uint32_t GetHeight() const { return height; } 
+        inline HWND GetHandle() const { return handle; } 
+
     private: 
         //창 메시지 처리 함수
         //static으로 하면 함수포인터에 전달 가능하다.

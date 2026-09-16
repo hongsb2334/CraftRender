@@ -9,6 +9,9 @@ namespace Craft
 
     //전방선언
     class Win32Window;
+    class Renderer;
+
+
     class Engine : public IMessageHandler
     {
     public:
@@ -33,5 +36,7 @@ namespace Craft
         //창 객체
         std::unique_ptr<Win32Window> window;
 
+        //렌더러 객체
+        std::unique_ptr<Renderer> renderer;
     };
 }

@@ -7,18 +7,22 @@
 
 namespace Craft
 {
+    //전방선언
+    class Win32Window;
+
     //cpu에서 gpu로 명령을 전달
     class Renderer
     {
     public:
-        Renderer();
+        Renderer(const Win32Window& window);
         ~Renderer();
     
     private:
         //장치 생성
         void CreateDevices();
+        
         //스왑 체인 생성
-
+        void CreateSwapChain(const Win32Window& window);
 
     private:
         //장치들(그래픽카드)
