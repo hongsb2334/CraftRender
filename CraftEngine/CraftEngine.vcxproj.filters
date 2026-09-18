@@ -47,5 +47,12 @@
     <ClInclude Include="Graphics\Renderer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Core.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="HLSLShaders\DefaultVS.hlsl" />
+    <FxCompile Include="HLSLShaders\DefaultPS.hlsl" />
   </ItemGroup>
 </Project>

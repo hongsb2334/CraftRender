@@ -29,6 +29,10 @@ namespace Craft
         void Quit();
 
     protected:
+        //Draw 함수
+        void Draw();
+
+    protected:
         // IMessageHandler을(를) 통해 상속됨
         virtual LRESULT HandleMessage(HWND window, UINT message, WPARAM wparam, LPARAM lparam) override;
 
