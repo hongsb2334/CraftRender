@@ -1,7 +1,7 @@
 ﻿#include "Renderer.h"
 #include <Core/Win32Window.h>
 #include <cstdint>
-
+#include <d3dcompiler.h>
 namespace Craft
 {
     Renderer::Renderer(const Win32Window& window)
@@ -18,19 +18,27 @@ namespace Craft
         //데모 버퍼 생성
         CreateDemoBuffers();
         
+        //셰이더 컴파일 및 셰이더 객체 생성
+        CreateDefaultShaders();
     }
 
     Renderer::~Renderer()
     {
-        //리소스 해제
-        SafeRelease(device);
-        SafeRelease(context);
-        SafeRelease(swapChain);   
-        SafeRelease(renderTargetView);
+        SafeRelease(vertexBuffer);
         SafeRelease(indexBuffer);
-
         SafeRelease(vertexShader);
         SafeRelease(pixelShader);
+        SafeRelease(inputLayout);
+
+        //리소스 해제
+        //장치(그래픽카드) 관련
+        SafeRelease(renderTargetView);
+        SafeRelease(swapChain);   
+        SafeRelease(context);
+        SafeRelease(device);
+
+
+        
     }
 
     void Renderer::Draw(float red, float green, float blue, uint32_t vsync)
@@ -53,7 +61,34 @@ namespace Craft
 
     void Renderer::DrawScene()
     {
+        //입력 설정 - 리소스 바인딩
+        uint32_t stride = sizeof(float) * 3;
+        uint32_t offset = 0;
+        context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+        context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        context->IASetInputLayout(inputLayout);
 
+        //토폴로지->정점을 어떻게 이어서 도형을 만들지 결정하는 방식
+        context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        
+        //셰이더 설정
+        context->VSSetShader(vertexShader, nullptr, 0);
+        context->PSSetShader(pixelShader, nullptr, 0);
+
+        //드로우 콜
+        context->DrawIndexed(3, 0, 0);
+
+        // 뷰포트 설정.
+        D3D11_VIEWPORT viewport = {};
+        viewport.TopLeftX = 0.0f;
+        viewport.TopLeftY = 0.0f;
+        viewport.Width = 1280.0f;
+        viewport.Height = 800.0f;
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+
+        context->RSSetViewports(1, &viewport);
+        
     }
 
     void Renderer::EndScene(uint32_t vsync)
@@ -240,7 +275,80 @@ namespace Craft
 
     void Renderer::CreateDefaultShaders()
     {
+        //셰이더 컴파일 결과 저장용 객체
+        ID3DBlob* vertexShaderObject = nullptr;
+
+        //셰이더(Shader) 컴파일
+        ThrowIfFailed(D3DCompileFromFile(
+            L"HLSLShaders/DefaultVS.hlsl",
+            nullptr,
+            nullptr,
+            "main",
+            "vs_5_0",
+            0,
+            0,
+            &vertexShaderObject,
+            nullptr
+
+        ), L"Failed to compile vertex shader");
+
+        //정점 셰이더 객체 생성
+        ThrowIfFailed(device->CreateVertexShader(vertexShaderObject->GetBufferPointer(),
+            vertexShaderObject->GetBufferSize(),
+            nullptr,
+            &vertexShader),
+            L"Failed to create vertex shader");
+
+
+        /*
+        LPCSTR SemanticName;
+    UINT SemanticIndex;
+    DXGI_FORMAT Format;
+    UINT InputSlot;
+    UINT AlignedByteOffset;
+    D3D11_INPUT_CLASSIFICATION InputSlotClass;
+    UINT InstanceDataStepRate;
+        */
+
+        //정점 셰이더 입력 관련 정보 객체 생성
+        D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[] =
+        {
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,D3D11_INPUT_PER_VERTEX_DATA, 0}
+        };
         
+        ThrowIfFailed(device->CreateInputLayout(inputLayoutDesc, _countof(inputLayoutDesc), vertexShaderObject->GetBufferPointer(),
+            vertexShaderObject->GetBufferSize(),
+            &inputLayout), L"failed to create input layout");
+
+
+        ID3DBlob* pixelShaderObject = nullptr;
+        //픽셀 셰이더
+
+        //셰이더(Shader) 컴파일
+        ThrowIfFailed(D3DCompileFromFile(
+            L"HLSLShaders/DefaultPS.hlsl",
+            nullptr,
+            nullptr,
+            "main",
+            "ps_5_0",
+            0,
+            0,
+            &pixelShaderObject,
+            nullptr
+        ), L"Failed to compile pixel shader");
+
+        //정점 셰이더 객체 생성
+        ThrowIfFailed(device->CreatePixelShader(pixelShaderObject->GetBufferPointer(),
+            pixelShaderObject->GetBufferSize(),
+            nullptr,
+            &pixelShader),
+            L"Failed to create pixel shader");
+
+
+        //사용한 리소스 해제
+        SafeRelease(vertexShaderObject);
+        SafeRelease(pixelShaderObject);
+            
     }
     
 }

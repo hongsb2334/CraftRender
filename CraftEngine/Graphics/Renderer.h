@@ -75,6 +75,11 @@ namespace Craft
         ID3D11VertexShader* vertexShader = nullptr;
         ID3D11PixelShader* pixelShader = nullptr;
 
+        //입력의 정보를 전달하는 데 사용되는 객체
+        ID3D11InputLayout* inputLayout = nullptr;
+
+     
+
     };
 }
 

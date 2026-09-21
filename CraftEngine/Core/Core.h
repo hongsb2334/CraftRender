@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #pragma warning(disable: 4251)
 
 #include <Windows.h>
@@ -20,6 +20,8 @@
 
 #define FUNCTION_TO_WIDE(x) TO_WIDE(x)
 #define GET_FUNCTION_NAME FUNCTION_TO_WIDE(__FUNCTION__)
+
+//Todo: buffer 동적할당으로 바꾸기
 
 #define ThrowIfFailed(result, message)														\
 	do																						\
