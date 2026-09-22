@@ -20,6 +20,9 @@ namespace Craft
         
         //셰이더 컴파일 및 셰이더 객체 생성
         CreateDefaultShaders();
+
+        //뷰포트 생성 및 바인딩
+        CreateViewPort(window.GetWidth(), window.GetHeight());
     }
 
     Renderer::~Renderer()
@@ -78,16 +81,9 @@ namespace Craft
         //드로우 콜
         context->DrawIndexed(3, 0, 0);
 
-        // 뷰포트 설정.
-        D3D11_VIEWPORT viewport = {};
-        viewport.TopLeftX = 0.0f;
-        viewport.TopLeftY = 0.0f;
-        viewport.Width = 1280.0f;
-        viewport.Height = 800.0f;
-        viewport.MinDepth = 0.0f;
-        viewport.MaxDepth = 1.0f;
+        
 
-        context->RSSetViewports(1, &viewport);
+       
         
     }
 
@@ -316,6 +312,7 @@ namespace Craft
             {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,D3D11_INPUT_PER_VERTEX_DATA, 0}
         };
         
+        //위 객체와 일대일 대응이 되야 함. 레이아웃이 바뀌면 코드를 매번 바꿔야 하는데, 이걸 자동화를 어떻게 할 것인지 고민
         ThrowIfFailed(device->CreateInputLayout(inputLayoutDesc, _countof(inputLayoutDesc), vertexShaderObject->GetBufferPointer(),
             vertexShaderObject->GetBufferSize(),
             &inputLayout), L"failed to create input layout");
@@ -349,6 +346,22 @@ namespace Craft
         SafeRelease(vertexShaderObject);
         SafeRelease(pixelShaderObject);
             
+    }
+
+    void Renderer::CreateViewPort(uint32_t width, uint32_t height)
+    {
+        //뷰포트 설정
+        viewport.TopLeftX = 0.0f;
+        viewport.TopLeftY = 0.0f;
+        
+        viewport.Width = static_cast<float>(width);
+        viewport.Height = static_cast<float>(height);
+        
+        viewport.MinDepth = 0.0f;
+        viewport.MaxDepth = 1.0f;
+
+        //바인딩
+        context->RSSetViewports(1, &viewport);
     }
     
 }

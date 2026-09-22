@@ -49,6 +49,11 @@ namespace Craft
         void CreateDefaultShaders();
 
 
+        //뷰포트 생성 함수
+        void CreateViewPort(uint32_t width, uint32_t height);
+
+
+
     private:
         //장치들(그래픽카드)
 
@@ -78,6 +83,9 @@ namespace Craft
         //입력의 정보를 전달하는 데 사용되는 객체
         ID3D11InputLayout* inputLayout = nullptr;
 
+        // 뷰포트 설정.
+        D3D11_VIEWPORT viewport = {};
+       
      
 
     };
