@@ -21,6 +21,26 @@ namespace Craft
         bool operator!=(const Vector2& other) const;
         Vector2& operator=(const Vector2& other);
 
+        //사칙연산
+
+        Vector2 operator+(const Vector2& other) const;
+        Vector2& operator+=(const Vector2& other);
+
+        Vector2 operator-(const Vector2& other) const;
+        Vector2& operator-=(const Vector2& other);
+
+        Vector2 operator*(const Vector2& other) const;
+        Vector2 operator*(float scale) const;
+        Vector2& operator*=(const Vector2& other);
+        Vector2& operator*=(float scale);
+
+        Vector2 operator/(const Vector2& other) const;
+        Vector2 operator/(float scale) const;
+        Vector2& operator/=(const Vector2& other);
+        Vector2& operator/=(float scale);
+
+
+
     public:
         float x = 0.0f;
         float y = 0.0f;

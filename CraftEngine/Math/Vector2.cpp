@@ -60,4 +60,94 @@ namespace Craft
         return *this;
         // TODO: insert return statement here
     }
+    Vector2 Vector2::operator+(const Vector2& other) const
+    {
+        return Vector2(x + other.x, y + other.y);
+    }
+    Vector2& Vector2::operator+=(const Vector2& other)
+    {
+        x += other.x;
+        y += other.y;
+        return *this;
+    }
+    Vector2 Vector2::operator-(const Vector2& other) const
+    {
+        return Vector2(x - other.x, y - other.y);
+    }
+    Vector2& Vector2::operator-=(const Vector2& other)
+    {
+        x -= other.x;
+        y -= other.y;
+        return *this;
+    }
+    Vector2 Vector2::operator*(const Vector2& other) const
+    {
+        return Vector2(x * other.x, y * other.y);
+    }
+
+    Vector2 Vector2::operator*(float scale) const
+    {
+        return Vector2(x * scale, y * scale);
+    }
+
+    Vector2& Vector2::operator*=(const Vector2& other)
+    {
+        x *= other.x;
+        y *= other.y;
+        return *this;
+    }
+
+    Vector2& Vector2::operator*=(float scale)
+    {
+        x *= scale;
+        y *= scale;
+        return *this;
+    }
+
+    Vector2 Vector2::operator/(const Vector2& other) const
+    {
+        if (std::abs(other.x) <= KindaSmallNumber
+            || std::abs(other.y) <= KindaSmallNumber)
+        {
+            assert(false && "other.x and other.y should not be near 0");
+            return Vector2::Zero;
+        }
+        return Vector2(x / other.x, y / other.y);
+    }
+
+    Vector2 Vector2::operator/(float scale) const
+    {
+        if (std::abs(scale) <= KindaSmallNumber)
+        {
+            assert(false && "scale should not be near 0");
+            return Vector2::Zero;
+        }
+        return Vector2(x / scale, y / scale);
+    }
+
+    Vector2& Vector2::operator/=(const Vector2& other)
+    {
+        if (std::abs(other.x) <= KindaSmallNumber
+            || std::abs(other.y) <= KindaSmallNumber)
+        {
+            assert(false && "other.x and other.y should not be near 0");
+            return *this;
+        }
+        x /= other.x;
+        y /= other.y;
+        return *this;
+    }
+
+    Vector2& Vector2::operator/=(float scale)
+    {
+        if (std::abs(scale) <= KindaSmallNumber)
+        {
+            assert(false && "scale should not be near 0");
+            return *this;
+        }
+        x /= scale;
+        y /= scale;
+        return *this;
+    }
+
 }
