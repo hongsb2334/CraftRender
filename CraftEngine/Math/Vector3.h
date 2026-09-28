@@ -19,8 +19,6 @@ namespace Craft
         //외적(Cross Product)
         Vector3 Cross(const Vector3 other) const;
 
-
-
         bool operator==(const Vector3& other) const;
         bool operator!=(const Vector3& other) const;
         Vector3& operator=(const Vector3& other);
@@ -29,6 +27,17 @@ namespace Craft
         Vector3& operator+=(const Vector3& other);
         Vector3 operator-(const Vector3& other) const;
         Vector3& operator-=(const Vector3& other);
+
+        Vector3 operator*(const Vector3& other) const;
+        Vector3 operator*(float scale) const;
+        Vector3& operator*=(const Vector3& other);
+        Vector3& operator*=(float scale);
+
+        Vector3 operator/(const Vector3& other) const;
+        Vector3 operator/(float scale) const;
+        Vector3& operator/=(const Vector3& other);
+        Vector3& operator/=(float scale);
+
 
     public:
         float x = 0.0f;
