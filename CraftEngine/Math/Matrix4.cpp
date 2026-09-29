@@ -65,7 +65,7 @@ namespace Craft
     Matrix4 Matrix4::Transpose(const Matrix4& matrix)
     {
         //반환할 행렬 선언
-        Matrix4 m;
+        Matrix4 m = matrix;
         //대각 성분을 기준으로 행과 열 바꿈
         std::swap(m.m01, m.m10);
         std::swap(m.m02, m.m20);
@@ -87,9 +87,9 @@ namespace Craft
         //4번째 열의 성분은 1로 가정
         //4번째 열의 성분이 1이면 점(위치) / 0이면 방향
         Vector3 v;
-        v.x = v.x * matrix.m00 + v.y * matrix.m10 + v.z * matrix.m20 + matrix.m30;
-        v.y = v.x * matrix.m01 + v.y * matrix.m11 + v.z * matrix.m21 + matrix.m31;
-        v.z = v.x * matrix.m02 + v.y * matrix.m12 + v.z * matrix.m22 + matrix.m32;
+        v.x = vector.x * matrix.m00 + vector.y * matrix.m10 + vector.z * matrix.m20 + matrix.m30;
+        v.y = vector.x * matrix.m01 + vector.y * matrix.m11 + vector.z * matrix.m21 + matrix.m31;
+        v.z = vector.x * matrix.m02 + vector.y * matrix.m12 + vector.z * matrix.m22 + matrix.m32;
         //4번째 열은 짜맞춘거라 없음
         
 
