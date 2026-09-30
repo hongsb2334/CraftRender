@@ -1,6 +1,9 @@
 ﻿#include "Matrix4.h"
 #include <cstring>
 #include <algorithm>
+
+#include <DirectXMath.h>
+
 namespace Craft
 {
     const Matrix4 Matrix4::Identity = Matrix4();
@@ -81,6 +84,49 @@ namespace Craft
         return Transpose(matrix);
     }
 
+    Matrix4 Matrix4::Translation(float x, float y, float z)
+    {
+        Matrix4 m;
+        
+        m.m00 = 1.0f; m.m01 = 0.0f; m.m02 = 0.0f; m.m03 = 0.0f;
+        m.m10 = 0.0f; m.m11 = 1.0f; m.m12 = 0.0f; m.m13 = 0.0f;
+        m.m20 = 0.0f; m.m21 = 0.0f; m.m22 = 1.0f; m.m23 = 0.0f;
+        m.m30 = x; m.m31 = y; m.m32 = z; m.m33 = 1.0f;
+
+
+        return m;
+    }
+
+    Matrix4 Matrix4::Translation(const Vector3& translation)
+    {
+        return Translation(translation.x, translation.y, translation.z);
+    }
+
+    Matrix4 Matrix4::Scale(float x, float y, float z)
+    {
+        //
+        Matrix4 m;
+
+        m.m00 = x; m.m01 = 0.0f; m.m02 = 0.0f; m.m03 = 0.0f;
+        m.m10 = 0.0f; m.m11 = y; m.m12 = 0.0f; m.m13 = 0.0f;
+        m.m20 = 0.0f; m.m21 = 0.0f; m.m22 = z; m.m23 = 0.0f;
+        m.m30 = 0.0f; m.m31 = 0.0f; m.m32 = 0.0f; m.m33 = 1.0f;
+
+
+
+        return m;
+    }
+
+    Matrix4 Matrix4::Scale(const Vector3& scale)
+    {
+        return Scale(scale.x, scale.y, scale.z);
+    }
+
+    Matrix4 Matrix4::Scale(float scale)
+    {
+        return Scale(scale, scale, scale);
+    }
+
     Vector3 operator*(const Vector3& vector, const Matrix4& matrix)
     {
         //행벡터로 취급해서 계산, vector는 1x3 이고, 행렬은 4x4라 안맞아서 vector를 1x4 행렬 형태로 취급
@@ -90,7 +136,7 @@ namespace Craft
         v.x = vector.x * matrix.m00 + vector.y * matrix.m10 + vector.z * matrix.m20 + matrix.m30;
         v.y = vector.x * matrix.m01 + vector.y * matrix.m11 + vector.z * matrix.m21 + matrix.m31;
         v.z = vector.x * matrix.m02 + vector.y * matrix.m12 + vector.z * matrix.m22 + matrix.m32;
-        //4번째 열은 짜맞춘거라 없음
+        
         
 
         return v;

@@ -30,6 +30,22 @@ namespace Craft
         //그냥 스케일 구하는 거에서는 순수 역행렬 구하지 않아도 됨
         static Matrix4 InverseRotation(const Matrix4& matrix);
 
+        //변환 행렬 생성 함수
+        
+
+        //이동 변환 행렬
+        static Matrix4 Translation(float x, float y, float z);
+        static Matrix4 Translation(const Vector3& translation);
+
+
+
+
+        //크기 변환 행렬
+        static Matrix4 Scale(float x, float y, float z);
+        static Matrix4 Scale(const Vector3& scale);
+        static Matrix4 Scale(float scale);
+
+
 
         //내부에서 관리하는 배열의 원시 포인터 반환 함수
         const float* Data() const { return elements; }
