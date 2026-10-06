@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include<Core/Core.h>
-
+#include <Math/Transform.h> 
 //direct3d 라이브러리의 객체를 사용하기 위한 인클루드
 #include <d3d11.h>
 #include <dxgi.h>
@@ -15,6 +15,13 @@ namespace Craft
     //cpu에서 gpu로 명령을 전달
     class Renderer
     {
+        //그리기에 필요한 데이터
+        struct RenderCommand
+        {
+            //월드 행렬
+            Matrix4 worldMatrix = Matrix4::Identity;
+        };
+
     public:
         Renderer(const Win32Window& window);
         ~Renderer();
@@ -22,6 +29,9 @@ namespace Craft
         //Draw 함수
         void Draw(float red, float green, float blue, uint32_t vsync);
     
+        //크기 변경 이벤트 함수
+        void OnResize(uint32_t width, uint32_t height);
+
     private:
         //그리기 단계 별로 실행되는 함수
         
@@ -52,6 +62,10 @@ namespace Craft
         //뷰포트 생성 함수
         void CreateViewPort(uint32_t width, uint32_t height);
 
+        //트랜스폼 상수 버퍼 생성 및 갱신 함수
+        void CreateTransformBuffer();
+        void UpdateTransformBuffer(const Matrix4& worldMatrix);
+        
 
 
     private:
@@ -82,6 +96,9 @@ namespace Craft
 
         //입력의 정보를 전달하는 데 사용되는 객체
         ID3D11InputLayout* inputLayout = nullptr;
+
+        //트랜스폼 데이터를 전달할 상수 버퍼
+        ID3D11Buffer* transformBuffer = nullptr;
 
         // 뷰포트 설정.
         D3D11_VIEWPORT viewport = {};

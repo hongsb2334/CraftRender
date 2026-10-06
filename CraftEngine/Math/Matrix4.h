@@ -38,14 +38,17 @@ namespace Craft
         static Matrix4 Translation(const Vector3& translation);
 
 
-
-
         //크기 변환 행렬
         static Matrix4 Scale(float x, float y, float z);
         static Matrix4 Scale(const Vector3& scale);
         static Matrix4 Scale(float scale);
 
-
+        //회전 변환 행렬
+        static Matrix4 RotationX(float angle);
+        static Matrix4 RotationY(float angle);
+        static Matrix4 RotationZ(float angle);
+        static Matrix4 Rotation(float x, float y, float z);
+        static Matrix4 Rotation(const Vector3& rotation);
 
         //내부에서 관리하는 배열의 원시 포인터 반환 함수
         const float* Data() const { return elements; }

@@ -71,6 +71,11 @@ namespace Craft
         //클래스 등록 해제
         UnregisterClass(className.c_str(), instance);
     }
+    void Win32Window::OnResize(uint32_t width, uint32_t height)
+    {
+        this->width = width;
+        this->height = height;
+    }
     LRESULT Win32Window::Win32MessageHandler(HWND window, UINT message, WPARAM wparam, LPARAM lparam)
     {
         //생성 이벤트

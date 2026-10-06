@@ -20,6 +20,10 @@ namespace Craft
 
         ~Win32Window();
 
+        //창 크기 변경 이벤트
+        void OnResize(uint32_t width, uint32_t height);
+
+
         //getter
         inline uint32_t GetWidth() const { return width; } 
         inline uint32_t GetHeight() const { return height; } 

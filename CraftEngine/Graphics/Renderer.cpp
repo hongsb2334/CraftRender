@@ -2,6 +2,7 @@
 #include <Core/Win32Window.h>
 #include <cstdint>
 #include <d3dcompiler.h>
+#include <cstring>
 namespace Craft
 {
     Renderer::Renderer(const Win32Window& window)
@@ -23,6 +24,9 @@ namespace Craft
 
         //뷰포트 생성 및 바인딩
         CreateViewPort(window.GetWidth(), window.GetHeight());
+    
+        //트랜스폼 버퍼 생성
+        CreateTransformBuffer();
     }
 
     Renderer::~Renderer()
@@ -40,7 +44,7 @@ namespace Craft
         SafeRelease(context);
         SafeRelease(device);
 
-
+        SafeRelease(transformBuffer);
         
     }
 
@@ -49,6 +53,35 @@ namespace Craft
         BeginScene(red, green, blue);
         DrawScene();
         EndScene(vsync);
+    }
+
+    void Renderer::OnResize(uint32_t width, uint32_t height)
+    {
+        //원래 크기 확인
+        DXGI_SWAP_CHAIN_DESC desc = {};
+        swapChain->GetDesc(&desc);
+
+
+        //렌더 타겟뷰 해제
+        //백버퍼가 렌더 타겟뷰랑 연결되어 있어서 끊어줌
+        SafeRelease(renderTargetView);
+
+        //백버퍼 크기 변경
+        ThrowIfFailed(swapChain->ResizeBuffers(2, width, height, DXGI_FORMAT_UNKNOWN, 0), L"Failed to resize back buffer");
+
+
+        swapChain->GetDesc(&desc);
+
+
+        //렌더 타겟뷰 재생성
+        CreateRenderTargetView();
+
+
+        //백버퍼 크기 변경되었으니까 뷰포트 크기 재설정
+        CreateViewPort(width, height);
+
+        
+
     }
 
     void Renderer::BeginScene(float red, float green, float blue)
@@ -250,8 +283,6 @@ namespace Craft
             &vertexBuffer), L"Failed to create vertex buffer");
 
 
-
-
         //인덱스 원시 데이터 배열
         //정점의 순서 - 삼각형을 구성할 인덱스 순서
         uint32_t indices[] = {0, 1, 2};
@@ -362,6 +393,47 @@ namespace Craft
 
         //바인딩
         context->RSSetViewports(1, &viewport);
+    }
+
+    void Renderer::CreateTransformBuffer()
+    {
+        //버퍼 구성 정보
+        D3D11_BUFFER_DESC vertexBufferDesc = {};
+        vertexBufferDesc.ByteWidth = sizeof(Matrix4);
+        //언리얼의 다이나믹 머티리얼 인스턴스임
+        vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        vertexBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        //cpu에서 쓰고 gpu에서 읽는다
+        vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+        //버퍼에 저장할 데이터
+        D3D11_SUBRESOURCE_DATA vertexBufferData = {};
+        vertexBufferData.pSysMem = Matrix4::Identity.Data();
+
+        ThrowIfFailed(device->CreateBuffer(&vertexBufferDesc,
+            &vertexBufferData,
+            &transformBuffer), L"Failed to create transform buffer");
+    }
+
+    void Renderer::UpdateTransformBuffer(const Matrix4& worldMatrix)
+    {
+        //버퍼에 저장할 데이터 설정 과정 처리
+        //아래 함수로 일반 버퍼의 데이터 변경 가능
+        //간헐적인(너무 자주는 아니고) 데이터 갱신 시 사용 권장
+        //context->UpdateSubresource();
+
+        //버퍼와 연결할 리소스 생성
+        D3D11_MAPPED_SUBRESOURCE mapped = {};
+        
+        //버퍼와 연동
+        //hresult로 반환하므로 throwiffailed 해주기
+        ThrowIfFailed(context->Map(transformBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped), L"failed to map transform buffer");
+
+        //업데이트할 데이터 설정
+        std::memcpy(mapped.pData, worldMatrix.Data(), sizeof(Matrix4));
+
+        //버퍼와 연동 해제
+        context->Unmap(transformBuffer, 0);
     }
     
 }

@@ -122,6 +122,20 @@ namespace Craft
         }
     }
 
+    void Engine::OnResize(uint32_t width, uint32_t height)
+    {
+        //메시지 전파
+        if (renderer)
+        {
+            renderer->OnResize(width, height);
+        }
+
+        if (window)
+        {
+            window->OnResize(width, height);
+        }
+    }
+
     LRESULT Engine::HandleMessage(HWND window, UINT message, WPARAM wparam, LPARAM lparam)
     {
         //엔진이 윈도우를 소유
@@ -167,6 +181,19 @@ namespace Craft
             EndPaint(window, &ps);
         }
         return 0;
+
+        //창 크기 메시지 처리
+        case WM_SIZE:
+        {
+            //변경된 너비/높이 구하기
+            uint32_t width = LOWORD(lparam);
+            uint32_t height = HIWORD(lparam);
+            
+            //메시지 전파
+            OnResize(width, height);
+        }
+
+
         }
         return DefWindowProc(window, message, wparam, lparam);
     }
