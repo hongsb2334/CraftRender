@@ -3,9 +3,12 @@
 #include<Core/Core.h>
 #include <Math/Transform.h> 
 //direct3d 라이브러리의 객체를 사용하기 위한 인클루드
+#include <Math/Matrix4.h>
 #include <d3d11.h>
 #include <dxgi.h>
 #include <cstdint>
+#include <vector>
+
 
 namespace Craft
 {
@@ -29,8 +32,14 @@ namespace Craft
         //Draw 함수
         void Draw(float red, float green, float blue, uint32_t vsync);
     
+        //그리기에 필요한 데이터 제출 함수
+        void Submit(const Matrix4& worldMatrix);
+
         //크기 변경 이벤트 함수
         void OnResize(uint32_t width, uint32_t height);
+
+        //전역 접근 함수
+        static Renderer& Get();
 
     private:
         //그리기 단계 별로 실행되는 함수
@@ -39,6 +48,10 @@ namespace Craft
         void BeginScene(float red, float green, float blue);
         //장면 그리기
         void DrawScene();
+
+        //렌더 목록 처리 함수
+        void DrawCommand(const RenderCommand& command);
+
         //버퍼 교환
         void EndScene(uint32_t vsync);
         
@@ -69,6 +82,10 @@ namespace Craft
 
 
     private:
+
+        //전역 접근 가능하도록 static 변수 선언
+        inline static Renderer* instance = nullptr;
+
         //장치들(그래픽카드)
 
         //디바이스->데이터 생성
@@ -103,6 +120,9 @@ namespace Craft
         // 뷰포트 설정.
         D3D11_VIEWPORT viewport = {};
        
+        //렌더 명령 목록
+        std::vector<RenderCommand> renderCommandList;
+
      
 
     };

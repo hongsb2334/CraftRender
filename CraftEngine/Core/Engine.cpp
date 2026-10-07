@@ -70,18 +70,18 @@ namespace Craft
                 //대기 시간 계산
                 float remainingTime = oneFrameTime - deltaTime;
 
-                //스레드 재우기
-                while (remainingTime >= 0.002f)
-                {
-                    //Todo: 멀티스레드 환경에서 Sleep에서 0넣을때와 1넣을때 차이점 찾기
-                    Sleep(1);
+                ////스레드 재우기
+                //while (remainingTime >= 0.002f)
+                //{
+                //    //Todo: 멀티스레드 환경에서 Sleep에서 0넣을때와 1넣을때 차이점 찾기
+                //    Sleep(1);
 
-                    //프레임 시간 구하기
-                    deltaTime = GetDeltaTime(current, previous);
-                    
-                    //남은 시간 계산
-                    remainingTime = oneFrameTime - deltaTime;
-                }
+                //    //프레임 시간 구하기
+                //    deltaTime = GetDeltaTime(current, previous);
+                //    
+                //    //남은 시간 계산
+                //    remainingTime = oneFrameTime - deltaTime;
+                //}
 
                 while (remainingTime > 0.0f)
                 {
