@@ -1,7 +1,7 @@
 ﻿#include "Engine.h"
 #include "Core/Win32Window.h"
 #include <Graphics/Renderer.h>
-
+#include <cassert>
 #if _DEBUG
 #include <iostream>
 #endif
@@ -11,6 +11,11 @@ namespace Craft
 {
     Engine::Engine(uint32_t width, uint32_t height, const std::wstring title)
     {
+        //전역 접근 가능하도록 인스턴스 설정
+        assert(!instance);
+        instance = this;
+
+
         //창 객체 생성
         //this넘기는건 부모인 인터페이스로 업캐스팅해서 넘김
         window = std::make_unique<Win32Window>(width, height, this, title);
@@ -21,6 +26,7 @@ namespace Craft
 
     Engine::~Engine()
     {
+        instance = nullptr;
     }
 
     void Engine::Run()
@@ -52,7 +58,7 @@ namespace Craft
 
         //이벤트(창 메시지 처리 루프)
         MSG message = {};
-        while (message.message != WM_QUIT)
+        while (!isQuit && message.message != WM_QUIT)
         {
             //min/max설정 해도되고 0 넣어도 다 받아줌
             //창에 메시지가 발생한 경우의 처리
@@ -95,8 +101,32 @@ namespace Craft
 #if _DEBUG
                 std::cout << "deltaTime : " << deltaTime << " | FPS : " << (1.0f / deltaTime) << "\n";
 #endif
-
+                BeginPlay();
+                Tick(deltaTime);
                 Draw();
+
+                //레벨 전환 처리
+                if (NextLevel)
+                {
+                    if (MainLevel)
+                    {
+                        MainLevel.reset();
+                    }
+
+                    MainLevel = NextLevel;
+                    NextLevel.reset();
+
+                    //레벨 초기화 함수 호출
+                    MainLevel->Initialized();
+                }
+
+
+                //액터 추가/삭제 처리
+                if (MainLevel)
+                {
+                    MainLevel->ProcessAddAndDestroyActors();
+                }
+
 
 
                 //이전 시간 기록
@@ -110,10 +140,43 @@ namespace Craft
 
     void Engine::Quit()
     {
+        //종료 플래그 설정
+        isQuit = true;
+    }
+
+    Engine& Engine::Get()
+    {
+        assert(instance);
+        
+        return *instance;
+
+    }
+
+    void Engine::BeginPlay()
+    {
+        //레벨에 이벤트 전달
+        if (MainLevel)
+        {
+            MainLevel->BeginPlay();
+        }
+    }
+
+    void Engine::Tick(float deltaTime)
+    {
+        if (MainLevel)
+        {
+            MainLevel->Tick(deltaTime);
+        }
     }
 
     void Engine::Draw()
     {
+        //레벨의 Draw가 먼저 처리되어야 함
+        if (MainLevel)
+        {
+            MainLevel->Draw();
+        }
+
         //이벤트 전달
         if (renderer)
         {

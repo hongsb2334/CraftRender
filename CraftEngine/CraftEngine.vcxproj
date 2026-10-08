@@ -96,8 +96,12 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Component\Component.cpp" />
+    <ClCompile Include="Component\TransformComponent.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Core\Win32Window.cpp" />
+    <ClCompile Include="GameFramework\Actor.cpp" />
+    <ClCompile Include="GameFramework\Level.cpp" />
     <ClCompile Include="Graphics\Renderer.cpp" />
     <ClCompile Include="Math\Matrix4.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
@@ -105,9 +109,13 @@
     <ClCompile Include="Math\Vector3.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Component\Component.h" />
+    <ClInclude Include="Component\TransformComponent.h" />
     <ClInclude Include="Core\Core.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Win32Window.h" />
+    <ClInclude Include="GameFramework\Actor.h" />
+    <ClInclude Include="GameFramework\Level.h" />
     <ClInclude Include="Graphics\Renderer.h" />
     <ClInclude Include="Interface\IMessageHandler.h" />
     <ClInclude Include="Math\MathDefines.h" />
