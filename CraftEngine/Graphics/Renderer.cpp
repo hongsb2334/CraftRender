@@ -1,4 +1,5 @@
 ﻿#include "Renderer.h"
+#include "StaticMesh.h"
 #include <Core/Win32Window.h>
 #include <cstdint>
 #include <d3dcompiler.h>
@@ -23,9 +24,6 @@ namespace Craft
 
         //렌더 타겟 뷰 생성
         CreateRenderTargetView();
-
-        //데모 버퍼 생성
-        CreateDemoBuffers();
         
         //셰이더 컴파일 및 셰이더 객체 생성
         CreateDefaultShaders();
@@ -42,8 +40,7 @@ namespace Craft
         instance = nullptr;
 
         //리소스 해제
-        SafeRelease(vertexBuffer);
-        SafeRelease(indexBuffer);
+        
         SafeRelease(vertexShader);
         SafeRelease(pixelShader);
         SafeRelease(inputLayout);
@@ -66,11 +63,12 @@ namespace Craft
         EndScene(vsync);
     }
 
-    void Renderer::Submit(const Matrix4& worldMatrix)
+    void Renderer::Submit(const std::shared_ptr<StaticMesh> mesh, const Matrix4& worldMatrix)
     {
         //삽입할 렌더 명령 생성
         RenderCommand command;
         command.worldMatrix = worldMatrix;
+        command.mesh = mesh;
 
         //렌더 목록에 추가
         renderCommandList.emplace_back(command);
@@ -124,18 +122,9 @@ namespace Craft
     }
 
     void Renderer::DrawScene()
-    {
-        //입력 설정 - 리소스 바인딩
-        uint32_t stride = sizeof(float) * 3;
-        uint32_t offset = 0;
-        context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-        context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        context->IASetInputLayout(inputLayout);
-
-        //토폴로지->정점을 어떻게 이어서 도형을 만들지 결정하는 방식
-        context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-        
+    {   
         //셰이더 설정
+        context->IASetInputLayout(inputLayout);
         context->VSSetShader(vertexShader, nullptr, 0);
         context->PSSetShader(pixelShader, nullptr, 0);
 
@@ -159,11 +148,21 @@ namespace Craft
 
     void Renderer::DrawCommand(const RenderCommand& command)
     {
+        //메시 설정이 안됐으면 종료
+        if (!command.mesh)
+        {
+            return;
+        }
+
+        //메시 바인딩
+        command.mesh->Bind();
+
+
         //트랜스폼 데이터 업데이트
         UpdateTransformBuffer(command.worldMatrix);
 
         //드로우 콜
-        context->DrawIndexed(3, 0, 0);
+        context->DrawIndexed(command.mesh->GetIndexCount(), 0, 0);
     }
 
     void Renderer::EndScene(uint32_t vsync)
@@ -262,7 +261,8 @@ namespace Craft
         swapChainDesc.OutputWindow = window.GetHandle();
         //창모드 실행 여부
         swapChainDesc.Windowed = true;
-        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        //swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
         //스왑체인 생성
         result = factory->CreateSwapChain(device, &swapChainDesc, &swapChain);
@@ -295,56 +295,7 @@ namespace Craft
         SafeRelease(backbuffer);
     }
 
-    void Renderer::CreateDemoBuffers()
-    {
-        //Temp: 구조체 선언
-        
-        struct Vector3
-        {
-            float x, y, z = 0.0f;
-        };
-
-        //삼각형을 이루는 정점 데이터(배열)
-        Vector3 vertices[] = {
-            Vector3 {0.0f, 0.5f, 0.5f},
-            Vector3 {0.5f, -0.5f, 0.5f},
-            Vector3 {-0.5f, -0.5f, 0.5f},
-        };
-
-        //원시 데이터를 포장해서 그래픽카드에 전달(사실 복사임)해야 함
-        //전달 매개체가 버퍼
-        
-        //버퍼 구성 정보
-        D3D11_BUFFER_DESC vertexBufferDesc = {};
-        vertexBufferDesc.ByteWidth = sizeof(Vector3) * 3;
-        vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-        //버퍼에 저장할 데이터
-        D3D11_SUBRESOURCE_DATA vertexBufferData = {};
-        vertexBufferData.pSysMem = vertices;
-
-        ThrowIfFailed(device->CreateBuffer(&vertexBufferDesc, 
-            &vertexBufferData,
-            &vertexBuffer), L"Failed to create vertex buffer");
-
-
-        //인덱스 원시 데이터 배열
-        //정점의 순서 - 삼각형을 구성할 인덱스 순서
-        uint32_t indices[] = {0, 1, 2};
-        D3D11_BUFFER_DESC indexBufferDesc = {};
-        indexBufferDesc.ByteWidth = sizeof(uint32_t) * 3;
-        indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-        indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-
-        //버퍼에 저장할 데이터
-        D3D11_SUBRESOURCE_DATA indexBufferData = {};
-        indexBufferData.pSysMem = indices;
-
-        ThrowIfFailed(device->CreateBuffer(&indexBufferDesc,
-            &indexBufferData,
-            &indexBuffer), L"Failed to create index buffer");
-    }
+    
 
     void Renderer::CreateDefaultShaders()
     {

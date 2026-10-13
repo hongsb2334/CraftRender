@@ -8,12 +8,13 @@
 #include <dxgi.h>
 #include <cstdint>
 #include <vector>
-
+#include <memory>
 
 namespace Craft
 {
     //전방선언
     class Win32Window;
+    class StaticMesh;
 
     //cpu에서 gpu로 명령을 전달
     class Renderer
@@ -23,6 +24,9 @@ namespace Craft
         {
             //월드 행렬
             Matrix4 worldMatrix = Matrix4::Identity;
+
+            //스태틱 메시
+            std::shared_ptr<StaticMesh> mesh;
         };
 
     public:
@@ -33,13 +37,17 @@ namespace Craft
         void Draw(float red, float green, float blue, uint32_t vsync);
     
         //그리기에 필요한 데이터 제출 함수
-        void Submit(const Matrix4& worldMatrix);
+        void Submit(const std::shared_ptr<StaticMesh> mesh, const Matrix4& worldMatrix);
 
         //크기 변경 이벤트 함수
         void OnResize(uint32_t width, uint32_t height);
 
         //전역 접근 함수
         static Renderer& Get();
+
+        //getter
+        ID3D11Device& GetDevice() const { return *device; }
+        ID3D11DeviceContext& GetContext() const { return *context; }
 
     private:
         //그리기 단계 별로 실행되는 함수
@@ -63,10 +71,6 @@ namespace Craft
 
         //렌더 타겟 뷰 생성
         void CreateRenderTargetView();
-
-        //데모를 위한 버퍼 생성 함수
-        //버퍼: 메모리 덩어리
-        void CreateDemoBuffers();
 
         //기본 셰이더 생성 함수
         void CreateDefaultShaders();
@@ -101,12 +105,6 @@ namespace Craft
         //그래픽카드에 그릴 대상을 선정할 때 사용하는 타입
         ID3D11RenderTargetView* renderTargetView = nullptr;
         
-        //정점 버퍼(VertexBuffer)
-        ID3D11Buffer* vertexBuffer = nullptr;
-
-        //인덱스 버퍼(색인 버퍼)
-        ID3D11Buffer* indexBuffer = nullptr;
- 
         //셰이더 관련 변수
         ID3D11VertexShader* vertexShader = nullptr;
         ID3D11PixelShader* pixelShader = nullptr;
