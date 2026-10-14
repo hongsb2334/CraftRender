@@ -94,4 +94,19 @@ namespace Craft
             std::vector<uint32_t>{ 0,1,2 }
         );
     }
+    std::shared_ptr<StaticMesh> StaticMesh::CreateQuadMesh()
+    {
+
+
+        return std::make_shared<StaticMesh>(
+            std::vector<Vector3> {
+            Vector3(-0.5f, 0.5f, 0.5f),
+            Vector3(0.5f, 0.5f, 0.5f),
+            Vector3(0.5f, -0.5f, 0.5f),
+            Vector3(-0.5f, -0.5f, 0.5f),
+        }, 
+            //왼쪽 위부터 시계방향으로 0,1,2,3으로 가정
+            std::vector<uint32_t>{0, 1, 2, 0, 2, 3}
+        );
+    }
 }

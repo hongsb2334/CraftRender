@@ -6,6 +6,7 @@
 #include <memory>
 
 
+
 namespace Craft
 {
     class StaticMesh
@@ -19,6 +20,7 @@ namespace Craft
 
         //편의 함수
         static std::shared_ptr<StaticMesh> CreateTriangleMesh();
+        static std::shared_ptr<StaticMesh> CreateQuadMesh();
  
 
         //getter
