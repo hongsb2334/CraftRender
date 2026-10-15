@@ -3,6 +3,7 @@
 
 #include <Windows.h>
 #include <comdef.h>
+#include <string>
 
 #define DLLEXPORT __declspec(dllexport)
 #define DLLIMPORT __declspec(dllimport)
@@ -30,13 +31,16 @@
 		{																					\
 			_com_error error(result);														\
 			const wchar_t* errorMessage = error.ErrorMessage();								\
-			wchar_t buffer[2048] = {};														\
-			wsprintf(buffer, L"File: %s\nFunction: %s\nLine: %d\nMessage: %s\nError: %s\n",	\
-				GET_FILE_NAME, GET_FUNCTION_NAME, __LINE__, message, errorMessage);			\
-			MessageBox(nullptr, buffer, L"D3D Error", MB_OK);								\
+			std::wstring buffer = L"File: " + std::wstring(GET_FILE_NAME) +					\
+								  L"\nFunction: " + std::wstring(GET_FUNCTION_NAME) +		\
+								  L"\nLine: " + std::to_wstring(__LINE__) +					\
+								  L"\nMessage: " + std::wstring(message) +					\
+								  L"\nError:" + std::wstring(errorMessage) + L"\n";			\
+			MessageBox(nullptr, buffer.c_str(), L"D3D Error", MB_OK);						\
 			__debugbreak();																	\
 		}																					\
 	} while (false)
+
 
 template<typename T>
 void SafeRelease(T*& t)

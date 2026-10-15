@@ -1,5 +1,6 @@
 ﻿#include "Renderer.h"
 #include "StaticMesh.h"
+#include "Shader.h"
 #include <Core/Win32Window.h>
 #include <cstdint>
 #include <d3dcompiler.h>
@@ -25,9 +26,6 @@ namespace Craft
         //렌더 타겟 뷰 생성
         CreateRenderTargetView();
         
-        //셰이더 컴파일 및 셰이더 객체 생성
-        CreateDefaultShaders();
-
         //뷰포트 생성 및 바인딩
         CreateViewPort(window.GetWidth(), window.GetHeight());
     
@@ -40,10 +38,6 @@ namespace Craft
         instance = nullptr;
 
         //리소스 해제
-        
-        SafeRelease(vertexShader);
-        SafeRelease(pixelShader);
-        SafeRelease(inputLayout);
 
         //장치(그래픽카드) 관련
         SafeRelease(renderTargetView);
@@ -63,12 +57,13 @@ namespace Craft
         EndScene(vsync);
     }
 
-    void Renderer::Submit(const std::shared_ptr<StaticMesh> mesh, const Matrix4& worldMatrix)
+    void Renderer::Submit(const std::shared_ptr<StaticMesh>& mesh, const std::shared_ptr<Shader>& shader, const Matrix4& worldMatrix)
     {
         //삽입할 렌더 명령 생성
         RenderCommand command;
         command.worldMatrix = worldMatrix;
         command.mesh = mesh;
+        command.shader = shader;
 
         //렌더 목록에 추가
         renderCommandList.emplace_back(command);
@@ -123,13 +118,6 @@ namespace Craft
 
     void Renderer::DrawScene()
     {   
-        //셰이더 설정
-        context->IASetInputLayout(inputLayout);
-        context->VSSetShader(vertexShader, nullptr, 0);
-        context->PSSetShader(pixelShader, nullptr, 0);
-
-        
-
         //정점 셰이더의 상수 버퍼(트랜스폼 버퍼) 바인딩
         context->VSSetConstantBuffers(0, 1, &transformBuffer);
 
@@ -148,8 +136,8 @@ namespace Craft
 
     void Renderer::DrawCommand(const RenderCommand& command)
     {
-        //메시 설정이 안됐으면 종료
-        if (!command.mesh)
+        //메시 or 셰이더 설정이 안됐으면 종료
+        if (!command.mesh|| !command.shader)
         {
             return;
         }
@@ -157,6 +145,7 @@ namespace Craft
         //메시 바인딩
         command.mesh->Bind();
 
+        command.shader->Bind();
 
         //트랜스폼 데이터 업데이트
         UpdateTransformBuffer(command.worldMatrix);
@@ -297,84 +286,7 @@ namespace Craft
 
     
 
-    void Renderer::CreateDefaultShaders()
-    {
-        //셰이더 컴파일 결과 저장용 객체
-        ID3DBlob* vertexShaderObject = nullptr;
-
-        //셰이더(Shader) 컴파일
-        ThrowIfFailed(D3DCompileFromFile(
-            L"HLSLShaders/DefaultVS.hlsl",
-            nullptr,
-            nullptr,
-            "main",
-            "vs_5_0",
-            0,
-            0,
-            &vertexShaderObject,
-            nullptr
-
-        ), L"Failed to compile vertex shader");
-
-        //정점 셰이더 객체 생성
-        ThrowIfFailed(device->CreateVertexShader(vertexShaderObject->GetBufferPointer(),
-            vertexShaderObject->GetBufferSize(),
-            nullptr,
-            &vertexShader),
-            L"Failed to create vertex shader");
-
-
-        /*
-        LPCSTR SemanticName;
-    UINT SemanticIndex;
-    DXGI_FORMAT Format;
-    UINT InputSlot;
-    UINT AlignedByteOffset;
-    D3D11_INPUT_CLASSIFICATION InputSlotClass;
-    UINT InstanceDataStepRate;
-        */
-
-        //정점 셰이더 입력 관련 정보 객체 생성
-        D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[] =
-        {
-            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,D3D11_INPUT_PER_VERTEX_DATA, 0}
-        };
-        
-        //위 객체와 일대일 대응이 되야 함. 레이아웃이 바뀌면 코드를 매번 바꿔야 하는데, 이걸 자동화를 어떻게 할 것인지 고민
-        ThrowIfFailed(device->CreateInputLayout(inputLayoutDesc, _countof(inputLayoutDesc), vertexShaderObject->GetBufferPointer(),
-            vertexShaderObject->GetBufferSize(),
-            &inputLayout), L"failed to create input layout");
-
-
-        ID3DBlob* pixelShaderObject = nullptr;
-        //픽셀 셰이더
-
-        //셰이더(Shader) 컴파일
-        ThrowIfFailed(D3DCompileFromFile(
-            L"HLSLShaders/DefaultPS.hlsl",
-            nullptr,
-            nullptr,
-            "main",
-            "ps_5_0",
-            0,
-            0,
-            &pixelShaderObject,
-            nullptr
-        ), L"Failed to compile pixel shader");
-
-        //정점 셰이더 객체 생성
-        ThrowIfFailed(device->CreatePixelShader(pixelShaderObject->GetBufferPointer(),
-            pixelShaderObject->GetBufferSize(),
-            nullptr,
-            &pixelShader),
-            L"Failed to create pixel shader");
-
-
-        //사용한 리소스 해제
-        SafeRelease(vertexShaderObject);
-        SafeRelease(pixelShaderObject);
-            
-    }
+    
 
     void Renderer::CreateViewPort(uint32_t width, uint32_t height)
     {

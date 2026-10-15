@@ -103,6 +103,7 @@
     <ClCompile Include="GameFramework\Actor.cpp" />
     <ClCompile Include="GameFramework\Level.cpp" />
     <ClCompile Include="Graphics\Renderer.cpp" />
+    <ClCompile Include="Graphics\Shader.cpp" />
     <ClCompile Include="Graphics\StaticMesh.cpp" />
     <ClCompile Include="Math\Matrix4.cpp" />
     <ClCompile Include="Math\Transform.cpp" />
@@ -118,6 +119,7 @@
     <ClInclude Include="GameFramework\Actor.h" />
     <ClInclude Include="GameFramework\Level.h" />
     <ClInclude Include="Graphics\Renderer.h" />
+    <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\StaticMesh.h" />
     <ClInclude Include="Interface\IMessageHandler.h" />
     <ClInclude Include="Math\MathDefines.h" />

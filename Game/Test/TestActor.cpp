@@ -17,7 +17,7 @@ void TestActor::Draw()
     const Craft::Transform& transform = GetTransform();
 
     //렌더러에 그리는데 필요한 데이터 제출
-    Craft::Renderer::Get().Submit(staticMesh, transform.GetWorldMatrix());
+    Craft::Renderer::Get().Submit(staticMesh, shader, transform.GetWorldMatrix());
 
 
 
