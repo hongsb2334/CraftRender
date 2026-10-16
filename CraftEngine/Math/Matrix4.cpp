@@ -3,7 +3,11 @@
 #include <algorithm>
 #include <cmath>
 #include "MathDefines.h"
-//#include <DirectXMath.h>
+#include <cassert>
+#include <DirectXMath.h>
+
+using namespace DirectX;
+XMMatrixLookAtLH();
 
 namespace Craft
 {
@@ -207,6 +211,46 @@ namespace Craft
     {
         
         return Rotation(rotation.x, rotation.y, rotation.z);
+    }
+
+    Matrix4 Matrix4::LookAt(const Vector3& eye, const Vector3& target, const Vector3& upVector)
+    {
+        //회전 성분 구하기
+        //-> 정규 직교 벡터들 구하기 (Forward, right, up)
+
+        //카메라의 앞방향 구하기
+        Vector3 forward = target - eye;
+
+        //카메라 위치와 바라보는 위치가 같으면 방향 못구해서 안됨
+        assert(forward.Length() > KindaSmallNumber);
+
+        //정규화(길이 1로 만들기)
+        forward.Normalized();
+
+        //앞방향과 직교(90도)하는 오른쪽 방향
+        Vector3 right = upVector.Normalized().Cross(forward);
+
+        //upvector와 forward가 겹치면 안됨
+        assert(right.Length() > KindaSmallNumber);
+        right = right.Normalized();
+
+        //위쪽 방향 구하기
+        //
+        Vector3 up = forward.Cross(right).Normalized();
+
+        //위치 성분에 들어갈 값 계산
+        float x = -eye.Dot(right);
+        float y = -eye.Dot(up);
+        float z = -eye.Dot(forward);
+
+        Matrix4 m;
+        
+        m.m00 = right.x; m.m01 = up.x; m.m02 = forward.x; m.m03 = 0.0f;
+        m.m10 = right.y; m.m11 = up.y; m.m12 = forward.y; m.m13 = 0.0f;
+        m.m20 = right.z; m.m21 = up.z; m.m22 = forward.z; m.m23 = 0.0f;
+        m.m30 = x;       m.m31 = y;    m.m32 = z;         m.m33 = 1.0f;
+
+        return m;
     }
 
     Vector3 operator*(const Vector3& vector, const Matrix4& matrix)

@@ -50,6 +50,13 @@ namespace Craft
         static Matrix4 Rotation(float x, float y, float z);
         static Matrix4 Rotation(const Vector3& rotation);
 
+        //카메라 변환 행렬 생성 함수
+        static Matrix4 LookAt(
+            const Vector3& eye,         //카메라 위치
+            const Vector3& target,      //카메라가 바라보아야 할 위치
+            const Vector3& upVector
+        );
+
         //내부에서 관리하는 배열의 원시 포인터 반환 함수
         const float* Data() const { return elements; }
 
