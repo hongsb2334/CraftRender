@@ -7,5 +7,7 @@ public:
     TestLevel();
 
     virtual void Initialized() override;
+
+    virtual void Draw() override;
 };
 

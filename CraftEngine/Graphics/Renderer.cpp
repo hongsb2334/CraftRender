@@ -31,6 +31,12 @@ namespace Craft
     
         //트랜스폼 버퍼 생성
         CreateTransformBuffer();
+
+        //트랜스폼 버퍼 생성
+        CreateTransformBuffer();
+
+        //카메라 버퍼 생성
+        CreateCameraBuffer();
     }
 
     Renderer::~Renderer()
@@ -38,6 +44,10 @@ namespace Craft
         instance = nullptr;
 
         //리소스 해제
+        
+        SafeRelease(transformBuffer);
+        SafeRelease(cameraBuffer);
+
 
         //장치(그래픽카드) 관련
         SafeRelease(renderTargetView);
@@ -69,6 +79,11 @@ namespace Craft
         renderCommandList.emplace_back(command);
     }
 
+    void Renderer::SubmitCamera(const Matrix4& viewMatrix)
+    {
+        cameraData.viewMatrix = viewMatrix;
+    }
+
     void Renderer::OnResize(uint32_t width, uint32_t height)
     {
         //원래 크기 확인
@@ -95,6 +110,7 @@ namespace Craft
         CreateViewPort(width, height);
 
         
+        
 
     }
 
@@ -120,6 +136,12 @@ namespace Craft
     {   
         //정점 셰이더의 상수 버퍼(트랜스폼 버퍼) 바인딩
         context->VSSetConstantBuffers(0, 1, &transformBuffer);
+        
+        //카메라 버퍼 업데이트
+        UpdateCameraBuffer();
+        
+        //정점 셰이더의 상수 버퍼(카메라 버퍼) 바인딩
+        context->VSSetConstantBuffers(1, 1, &cameraBuffer);
 
         //렌더 명령 처리
         for (const RenderCommand& command : renderCommandList)
@@ -343,6 +365,44 @@ namespace Craft
 
         //버퍼와 연동 해제
         context->Unmap(transformBuffer, 0);
+    }
+
+    void Renderer::CreateCameraBuffer()
+    {
+        //버퍼 구성 정보
+        D3D11_BUFFER_DESC BufferDesc = {};
+        BufferDesc.ByteWidth = sizeof(CameraBufferData);
+        //언리얼의 다이나믹 머티리얼 인스턴스임
+        BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+        BufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+        //cpu에서 쓰고 gpu에서 읽는다
+        BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+
+        //버퍼에 저장할 데이터
+        D3D11_SUBRESOURCE_DATA BufferData = {};
+        BufferData.pSysMem = &cameraData;
+
+        ThrowIfFailed(device->CreateBuffer(&BufferDesc,
+            &BufferData,
+            &cameraBuffer), L"Failed to create camera buffer");
+
+    }
+
+    void Renderer::UpdateCameraBuffer()
+    {
+        //버퍼와 연결할 리소스 생성
+        D3D11_MAPPED_SUBRESOURCE mapped = {};
+
+        //버퍼와 연동
+        //hresult로 반환하므로 throwiffailed 해주기
+        ThrowIfFailed(context->Map(cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped), L"failed to map camera buffer");
+
+        //업데이트할 데이터 설정
+        std::memcpy(mapped.pData, &cameraData, sizeof(CameraBufferData));
+
+        //버퍼와 연동 해제
+        context->Unmap(cameraBuffer, 0);
+
     }
     
 }

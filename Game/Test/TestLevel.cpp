@@ -4,6 +4,8 @@
 #include <Component/StaticMeshComponent.h>
 #include <Graphics/StaticMesh.h>
 #include <Graphics/Shader.h>
+#include <Graphics/Renderer.h>
+#include <Math/Matrix4.h>
 
 using namespace Craft;
 TestLevel::TestLevel()
@@ -53,4 +55,17 @@ void TestLevel::Initialized()
 
     center->GetComponent<StaticMeshComponent>()->SetShader(shader);
 
+}
+
+void TestLevel::Draw()
+{
+    Level::Draw();
+
+    // 뷰 행렬 제출
+
+    Vector3 eye(0.0f, 0.0, 0.0f);
+    Vector3 target = eye + Vector3::Forward;
+    Matrix4 view = Matrix4::LookAt(eye, target, Vector3::Up);
+
+    Renderer::Get().SubmitCamera(view);
 }

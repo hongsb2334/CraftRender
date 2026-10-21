@@ -5,6 +5,14 @@
 
 namespace Craft
 {
+    StaticMeshComponent::StaticMeshComponent()
+    {
+    }
+
+    StaticMeshComponent::~StaticMeshComponent()
+    {
+    }
+
     void StaticMeshComponent::Draw()
     {
         Component::Draw();

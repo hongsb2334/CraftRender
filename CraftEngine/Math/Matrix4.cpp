@@ -7,7 +7,7 @@
 #include <DirectXMath.h>
 
 using namespace DirectX;
-XMMatrixLookAtLH();
+int XMMatrixLookAtLH();
 
 namespace Craft
 {
@@ -249,6 +249,34 @@ namespace Craft
         m.m10 = right.y; m.m11 = up.y; m.m12 = forward.y; m.m13 = 0.0f;
         m.m20 = right.z; m.m21 = up.z; m.m22 = forward.z; m.m23 = 0.0f;
         m.m30 = x;       m.m31 = y;    m.m32 = z;         m.m33 = 1.0f;
+
+        return m;
+    }
+
+    Matrix4 Matrix4::Perspective(float fieldOfView, float width, float height, float nearDistance, float farDistance)
+    {
+        //화면비 구하기 (Aspect Ratio)
+        float aspect = width / height;
+
+        //초점 거리 (focal length)
+        float d = 1.0f / std::tan(fieldOfView * 0.5f * DegreesToRadians);
+
+        //Y의 스케일 계수
+        float sy = d;
+
+        //X의 스케일 계수
+        float sx = sy / aspect;
+
+        //A와 B
+        float a = farDistance / (farDistance - nearDistance);
+        float b = -nearDistance * a;
+
+
+        Matrix4 m;
+        m.m00 = sx;     m.m01 = 0.0f;	m.m02 = 0.0f;	m.m03 = 0.0f;
+        m.m10 = 0.0f;	m.m11 = sy;	    m.m12 = 0.0f;	m.m13 = 0.0f;
+        m.m20 = 0.0f;	m.m21 = 0.0f;	m.m22 = a;	    m.m23 = 1.0f;
+        m.m30 = 0.0f;	m.m31 = 0.0f;	m.m32 = b;	    m.m33 = 0.0f;
 
         return m;
     }

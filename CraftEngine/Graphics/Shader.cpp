@@ -9,26 +9,32 @@ namespace Craft
     {
         //셰이더 경로 만들기
         std::wstring shaderFolder = L"HLSLShaders/";
-        std::wstring vertexPath = shaderFolder + shaderName + std::wstring(L"VS.hlsl");
-        std::wstring pixelPath = shaderFolder + shaderName + std::wstring(L"PS.hlsl");
-       
+        std::wstring vertexPath = shaderFolder + shaderName + std::wstring(L"VS.cso");
+        std::wstring pixelPath = shaderFolder + shaderName + std::wstring(L"PS.cso");
+        
 
         //셰이더 컴파일 결과 저장용 객체
         ID3DBlob* vertexShaderObject = nullptr;
 
         //셰이더(Shader) 컴파일
-        ThrowIfFailed(D3DCompileFromFile(
-            vertexPath.c_str(),
-            nullptr,
-            nullptr,
-            "main",
-            "vs_5_0",
-            0,
-            0,
-            &vertexShaderObject,
-            nullptr
+        //ThrowIfFailed(D3DCompileFromFile(
+        //    vertexPath.c_str(),
+        //    nullptr,
+        //    nullptr,
+        //    "main",
+        //    "vs_5_0",
+        //    0,
+        //    0,
+        //    &vertexShaderObject,
+        //    nullptr
 
-        ), L"Failed to compile vertex shader");
+        //), L"Failed to compile vertex shader");
+
+        // CSO 읽어오기
+        ThrowIfFailed(
+            D3DReadFileToBlob(vertexPath.c_str(), &vertexShaderObject),
+            L"Failed to read vertex shader object"
+        );
 
         //장치 얻어오기
         auto& device = Renderer::Get().GetDevice();
@@ -66,18 +72,23 @@ namespace Craft
         ID3DBlob* pixelShaderObject = nullptr;
         //픽셀 셰이더
 
-        //셰이더(Shader) 컴파일
-        ThrowIfFailed(D3DCompileFromFile(
-            pixelPath.c_str(),
-            nullptr,
-            nullptr,
-            "main",
-            "ps_5_0",
-            0,
-            0,
-            &pixelShaderObject,
-            nullptr
-        ), L"Failed to compile pixel shader");
+        ////셰이더(Shader) 컴파일
+        //ThrowIfFailed(D3DCompileFromFile(
+        //    pixelPath.c_str(),
+        //    nullptr,
+        //    nullptr,
+        //    "main",
+        //    "ps_5_0",
+        //    0,
+        //    0,
+        //    &pixelShaderObject,
+        //    nullptr
+        //), L"Failed to compile pixel shader");
+
+
+        //cso 파일 로드
+        ThrowIfFailed(D3DReadFileToBlob(pixelPath.c_str(), &pixelShaderObject), L"Failed to read pixel shader object");
+
 
         //정점 셰이더 객체 생성
         ThrowIfFailed(device.CreatePixelShader(pixelShaderObject->GetBufferPointer(),
