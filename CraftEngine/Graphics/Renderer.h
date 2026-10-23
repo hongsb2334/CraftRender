@@ -38,6 +38,9 @@ namespace Craft
         {
             //뷰변환 행렬
             Matrix4 viewMatrix = Matrix4::Identity;
+
+            //투영변환 행렬
+            Matrix4 projectionMatrix = Matrix4::Identity;
         };
 
 
@@ -53,7 +56,9 @@ namespace Craft
         void Submit(const std::shared_ptr<StaticMesh>& mesh, const std::shared_ptr<Shader>& shader, const Matrix4& worldMatrix);
 
         //카메라 행렬 데이터 제출 함수
-        void SubmitCamera(const Matrix4& viewMatrix);
+        void SubmitCamera(const Matrix4& viewMatrix, const Matrix4& projectionMatrix);
+
+
 
         //크기 변경 이벤트 함수
         void OnResize(uint32_t width, uint32_t height);
@@ -88,7 +93,8 @@ namespace Craft
         //렌더 타겟 뷰 생성
         void CreateRenderTargetView();
 
-
+        //뎁스 스텐실 뷰 생성
+        void CreateStencilView(uint32_t width, uint32_t height);
 
         //뷰포트 생성 함수
         void CreateViewPort(uint32_t width, uint32_t height);
@@ -122,6 +128,12 @@ namespace Craft
         //백버퍼를 대표하는 렌더 타겟
         //그래픽카드에 그릴 대상을 선정할 때 사용하는 타입
         ID3D11RenderTargetView* renderTargetView = nullptr;
+
+        //depth 처리를 위한 depth/stencil 버퍼
+        ID3D11Texture2D* depthStencilBuffer = nullptr;
+
+        //depth 버퍼를 그래픽카드에 전달하는 depth/stencil view
+        ID3D11DepthStencilView* depthStencilView = nullptr;
 
         //트랜스폼 데이터를 전달할 상수 버퍼
         ID3D11Buffer* transformBuffer = nullptr;

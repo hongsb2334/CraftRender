@@ -8,6 +8,6 @@ public:
 
     virtual void Initialized() override;
 
-    virtual void Draw() override;
+    //virtual void Draw() override;
 };
 

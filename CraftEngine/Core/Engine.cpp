@@ -152,6 +152,17 @@ namespace Craft
 
     }
 
+    uint32_t Engine::GetClientWidth() const
+    {
+        //창 객체한테 얻기
+        return window ? window->GetWidth() : 0;
+    }
+
+    uint32_t Engine::GetClientHeight() const
+    {
+        return window ? window->GetHeight() : 0;
+    }
+
     void Engine::BeginPlay()
     {
         //레벨에 이벤트 전달

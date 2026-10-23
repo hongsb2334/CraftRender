@@ -255,6 +255,13 @@ namespace Craft
 
     Matrix4 Matrix4::Perspective(float fieldOfView, float width, float height, float nearDistance, float farDistance)
     {
+        //값 확인
+        assert(fieldOfView > 0.0f && fieldOfView < 180.0f);
+        assert(width > 0.0f && height > 0.0f);
+        assert(nearDistance > 0.0f && farDistance > nearDistance);
+
+
+
         //화면비 구하기 (Aspect Ratio)
         float aspect = width / height;
 
@@ -279,6 +286,13 @@ namespace Craft
         m.m30 = 0.0f;	m.m31 = 0.0f;	m.m32 = b;	    m.m33 = 0.0f;
 
         return m;
+    }
+
+    Matrix4 Matrix4::InverseTranslationRotation(const Vector3& position, const Vector3& rotation)
+    {
+        //순방향 변환 -> S X R X T
+        //역방향 반환 -> T^-1 X R^-1 X S^-1
+        return Translation(position * -1.0f) * InverseRotation(Rotation(rotation));
     }
 
     Vector3 operator*(const Vector3& vector, const Matrix4& matrix)
