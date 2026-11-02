@@ -1,6 +1,8 @@
 ﻿#include "Engine.h"
 #include "Core/Win32Window.h"
 #include <Graphics/Renderer.h>
+#include <Graphics/ShaderManager.h>
+#include <Graphics/TextureManager.h>
 #include <cassert>
 #if _DEBUG
 #include <iostream>
@@ -22,6 +24,10 @@ namespace Craft
 
         //렌더러 객체 생성
         renderer = std::make_unique<Renderer>(*window);
+        
+        //셰이더 관리자/텍스처 관리자 객체 생성
+        shaderManager = std::make_unique<ShaderManager>();
+        textureManager= std::make_unique<TextureManager>();
     }
 
     Engine::~Engine()

@@ -15,7 +15,7 @@ namespace Craft
     //전방선언
     class Win32Window;
     class StaticMesh;
-    class Shader;
+    class Material;
 
     //cpu에서 gpu로 명령을 전달
     class Renderer
@@ -29,8 +29,9 @@ namespace Craft
             //스태틱 메시
             std::shared_ptr<StaticMesh> mesh;
 
-            //셰이더
-            std::shared_ptr<Shader> shader;
+            //머티리얼(셰이더 + 리소스)
+            std::shared_ptr<Material> material;
+
         };
 
         //카메라 데이터
@@ -53,7 +54,7 @@ namespace Craft
         void Draw(float red, float green, float blue, uint32_t vsync);
     
         //그리기에 필요한 데이터 제출 함수
-        void Submit(const std::shared_ptr<StaticMesh>& mesh, const std::shared_ptr<Shader>& shader, const Matrix4& worldMatrix);
+        void Submit(const std::shared_ptr<StaticMesh>& mesh, const std::shared_ptr<Material>& material, const Matrix4& worldMatrix);
 
         //카메라 행렬 데이터 제출 함수
         void SubmitCamera(const Matrix4& viewMatrix, const Matrix4& projectionMatrix);
@@ -94,7 +95,7 @@ namespace Craft
         void CreateRenderTargetView();
 
         //뎁스 스텐실 뷰 생성
-        void CreateStencilView(uint32_t width, uint32_t height);
+        void CreateDepthStencilView(uint32_t width, uint32_t height);
 
         //뷰포트 생성 함수
         void CreateViewPort(uint32_t width, uint32_t height);

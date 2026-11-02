@@ -4,6 +4,8 @@
 #include <Windows.h>
 #include <comdef.h>
 #include <string>
+#include <cassert>
+
 
 #define DLLEXPORT __declspec(dllexport)
 #define DLLIMPORT __declspec(dllimport)
@@ -51,3 +53,40 @@ void SafeRelease(T*& t)
 		t = nullptr;
 	}
 }
+
+//전역 접근 가능한 클래스 기능 제공하는 클래스 템플릿
+template<typename T>
+class TGlobalAccessible
+{
+public:
+
+    TGlobalAccessible()
+    {
+        assert(!instance);
+        instance = static_cast<T*>(this);
+    }
+
+    virtual ~TGlobalAccessible()
+    {
+        instance = nullptr;
+    }
+
+    //복사/이동 방지
+    TGlobalAccessible(const TGlobalAccessible& other) = delete;
+
+    TGlobalAccessible& operator=(TGlobalAccessible& other) = delete;
+
+    TGlobalAccessible(const TGlobalAccessible&& other) = delete;
+
+    TGlobalAccessible& operator=(TGlobalAccessible&& other) = delete;
+
+    //전역 접근 변수
+    static T& Get()
+    {
+        assert(instance);
+        return *instance;
+    }
+private:
+    //전역 변수 
+    inline static T* instance = nullptr;
+};

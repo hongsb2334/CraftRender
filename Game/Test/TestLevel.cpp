@@ -2,11 +2,15 @@
 #include "TestActor.h"
 #include <Component/TransformComponent.h>
 #include <Component/StaticMeshComponent.h>
-#include <Component/CameraComponent.h>
+#include <Actor/CameraActor.h>
+//#include <Component/CameraComponent.h>
 
 
 #include <Graphics/StaticMesh.h>
-#include <Graphics/Shader.h>
+#include <Graphics/Material.h>
+#include <Graphics/ShaderManager.h>
+#include <Graphics/TextureManager.h>
+
 //#include <Graphics/Renderer.h>
 //#include <Math/Matrix4.h>
 //#include <Core/Engine.h>
@@ -24,43 +28,38 @@ void TestLevel::Initialized()
     auto triangle = StaticMesh::CreateTriangleMesh();
     auto quad = StaticMesh::CreateQuadMesh();
 
-    //셰이더 생성 
-    auto defaultshader = Shader::CreateDefaultShader();
-    auto yellowshader = std::make_shared<Shader>(L"Yellow");
+    //머티리얼 생성
+    auto defaultMaterial = std::make_shared<DefaultMaterial>();
+    auto textureMappingMaterial = std::make_shared<TextureMappingMaterial>("Assets/T_Checker.jpg");
 
     //액터 생성
     auto left = SpawnActor<TestActor>();
     left->GetTransform().scale = Vector3::One * 0.4f;
-    //left->GetTransform().position.x = -0.5f;
+    left->GetTransform().position.x = -0.5f;
     
     
     //액터에 스태틱 메시 설정
     left->GetComponent<StaticMeshComponent>()->SetStaticMesh(quad);
     
     //셰이더 설정
-    left->GetComponent<StaticMeshComponent>()->SetShader(defaultshader);
+    left->GetComponent<StaticMeshComponent>()->SetMaterial(defaultMaterial);
 
     
     auto right = SpawnActor<TestActor>();
     right->GetTransform().scale = Vector3::One * 0.4f;
-    //right->GetTransform().position.x = 0.5f;
-    right->GetTransform().position.z = 1.0f;
-
-
-    
+    right->GetTransform().position.x = 0.5f;
+    right->GetTransform().position.z = -1.0f;
 
 
     //액터에 삼각형 메시 설정
-    right->GetComponent<StaticMeshComponent>()->SetStaticMesh(triangle);
-
-    right->GetComponent<StaticMeshComponent>()->SetShader(yellowshader);
-
+    auto rightMeshComponent = right->GetComponent<StaticMeshComponent>();
+    rightMeshComponent->SetStaticMesh(triangle);
+    rightMeshComponent->SetMaterial(textureMappingMaterial);
 
 
     //카메라
-    auto camera = SpawnActor<Actor>();
-    camera->AddComponent<CameraComponent>();
-    camera->GetTransform().position.z = -3.0f;
+    auto camera = SpawnActor<CameraActor>();
+    camera->GetTransform().position.z = -2.0f;
 }
 
 //void TestLevel::Draw()

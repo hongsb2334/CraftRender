@@ -1,11 +1,11 @@
 ﻿#include "Renderer.h"
 #include "StaticMesh.h"
-#include "Shader.h"
+#include "Material.h"
 #include <Core/Win32Window.h>
 #include <cstdint>
-#include <d3dcompiler.h>
 #include <cstring>
 #include <cassert>
+#include <memory>
 
 namespace Craft
 {
@@ -25,6 +25,9 @@ namespace Craft
 
         //렌더 타겟 뷰 생성
         CreateRenderTargetView();
+
+        //뎁스 스텐실 뷰 생성
+        CreateDepthStencilView(window.GetWidth(), window.GetHeight());
         
         //뷰포트 생성 및 바인딩
         CreateViewPort(window.GetWidth(), window.GetHeight());
@@ -37,6 +40,8 @@ namespace Craft
 
         //카메라 버퍼 생성
         CreateCameraBuffer();
+
+
     }
 
     Renderer::~Renderer()
@@ -48,6 +53,9 @@ namespace Craft
         SafeRelease(transformBuffer);
         SafeRelease(cameraBuffer);
 
+
+        SafeRelease(depthStencilBuffer);
+        SafeRelease(depthStencilView);
 
         //장치(그래픽카드) 관련
         SafeRelease(renderTargetView);
@@ -67,13 +75,13 @@ namespace Craft
         EndScene(vsync);
     }
 
-    void Renderer::Submit(const std::shared_ptr<StaticMesh>& mesh, const std::shared_ptr<Shader>& shader, const Matrix4& worldMatrix)
+    void Renderer::Submit(const std::shared_ptr<StaticMesh>& mesh, const std::shared_ptr<Material>& material, const Matrix4& worldMatrix)
     {
         //삽입할 렌더 명령 생성
         RenderCommand command;
         command.worldMatrix = worldMatrix;
         command.mesh = mesh;
-        command.shader = shader;
+        command.material = material;
 
         //렌더 목록에 추가
         renderCommandList.emplace_back(command);
@@ -87,25 +95,29 @@ namespace Craft
 
     void Renderer::OnResize(uint32_t width, uint32_t height)
     {
-        //원래 크기 확인
-        DXGI_SWAP_CHAIN_DESC desc = {};
-        swapChain->GetDesc(&desc);
+        ////원래 크기 확인
+        //DXGI_SWAP_CHAIN_DESC desc = {};
+        //swapChain->GetDesc(&desc);
 
 
         //렌더 타겟뷰 해제
         //백버퍼가 렌더 타겟뷰랑 연결되어 있어서 끊어줌
         SafeRelease(renderTargetView);
+        SafeRelease(depthStencilBuffer);
+        SafeRelease(depthStencilView);
 
         //백버퍼 크기 변경
         ThrowIfFailed(swapChain->ResizeBuffers(2, width, height, DXGI_FORMAT_UNKNOWN, 0), L"Failed to resize back buffer");
 
 
-        swapChain->GetDesc(&desc);
+        //swapChain->GetDesc(&desc);
 
 
         //렌더 타겟뷰 재생성
         CreateRenderTargetView();
 
+        //depth stencil view 재생성
+        CreateDepthStencilView(width, height);
 
         //백버퍼 크기 변경되었으니까 뷰포트 크기 재설정
         CreateViewPort(width, height);
@@ -126,11 +138,17 @@ namespace Craft
     {
         //그리기 준비
         //배경 지우기 및 그리기 대상 설정, 드로우콜 했을 때 어디다 그릴지 설정
-        context->OMSetRenderTargets(1, &renderTargetView, nullptr);
+        context->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
         //배경을 지우는 것은 그냥 단색으로 다 채우는 것임
         const float backGroundColor[4] = { red, green, blue, 1.0f };
         context->ClearRenderTargetView(renderTargetView, backGroundColor);
+
+        //뎁스 스텐실 값 초기화, 1로 해야 어떤거랑 비교하던 depth 판정에서 이겨서 그려질 수 있다. depth는 0~1까지
+        context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
+        //뷰포트 설정
+        context->RSSetViewports(1, &viewport);
     }
 
     void Renderer::DrawScene()
@@ -159,8 +177,8 @@ namespace Craft
 
     void Renderer::DrawCommand(const RenderCommand& command)
     {
-        //메시 or 셰이더 설정이 안됐으면 종료
-        if (!command.mesh|| !command.shader)
+        //메시 or 머티리얼 설정이 안됐으면 종료
+        if (!command.mesh|| !command.material)
         {
             return;
         }
@@ -168,7 +186,7 @@ namespace Craft
         //메시 바인딩
         command.mesh->Bind();
 
-        command.shader->Bind();
+        command.material->Bind();
 
         //트랜스폼 데이터 업데이트
         UpdateTransformBuffer(command.worldMatrix);
@@ -307,7 +325,7 @@ namespace Craft
         SafeRelease(backbuffer);
     }
 
-    void Renderer::CreateStencilView(uint32_t width, uint32_t height)
+    void Renderer::CreateDepthStencilView(uint32_t width, uint32_t height)
     {
         //뎁스/스텐실 버퍼를 생성하기 위한 설명 구조체(Descriptor
         D3D11_TEXTURE2D_DESC depthBufferDesc = {};
@@ -330,10 +348,14 @@ namespace Craft
             L"Failed to create depth stencil buffer"
         );
 
-
-
-
-        //device->CreateTexture2D(depthBufferDesc, );
+        D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc = {};
+        depthStencilViewDesc.Format = depthBufferDesc.Format;
+        depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+        depthStencilViewDesc.Flags= 0;
+        
+        ThrowIfFailed(
+            device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDesc, &depthStencilView), L"Failed to Create Depth Stencil View"
+        );
     }
 
     

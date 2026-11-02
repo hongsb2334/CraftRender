@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include <Math/Vector3.h>
+#include "Vertex.h"
 #include <d3d11.h>
 #include <cstdint>
 #include <vector>
@@ -12,7 +12,7 @@ namespace Craft
     class StaticMesh
     {
     public:
-        StaticMesh(const std::vector<Vector3>& vertices, const std::vector<uint32_t>& indices);
+        StaticMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices);
         ~StaticMesh();
 
         //바인딩 함수 - 버퍼(리소스)를 그래픽스 파이프라인에 설정

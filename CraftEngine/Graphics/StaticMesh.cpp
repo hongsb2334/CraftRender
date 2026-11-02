@@ -1,11 +1,12 @@
 ﻿#include "StaticMesh.h"
 #include "Renderer.h"
+#include "Vertex.h"
 #include <Core/Core.h>
 #include <cassert>
 
 namespace Craft
 {
-    StaticMesh::StaticMesh(const std::vector<Vector3>& vertices, const std::vector<uint32_t>& indices)
+    StaticMesh::StaticMesh(const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
     {
         //정점/ 인덱스 배열의 항목 수가 0보다 큰지 확인
         assert(vertices.size() > 0);
@@ -86,24 +87,22 @@ namespace Craft
     {
 
         return std::make_shared<StaticMesh>(
-            std::vector<Vector3>{
-            Vector3(0.0f, 0.5f, 0.5f),
-            Vector3(0.5f, -0.5f, 0.5f),
-                Vector3(-0.5f, -0.5f, 0.5f)
+            std::vector<Vertex>{
+            Vertex{ Vector3(0.0f, 0.5f, 0.5f), Vector2(0.5f, 0.0f)},
+            Vertex{ Vector3(0.5f, -0.5f, 0.5f), Vector2(1.0f, 1.0f)},
+            Vertex{ Vector3(-0.5f, -0.5f, 0.5f), Vector2(0.0f, 1.0f)}
         },
             std::vector<uint32_t>{ 0,1,2 }
         );
     }
     std::shared_ptr<StaticMesh> StaticMesh::CreateQuadMesh()
     {
-
-
         return std::make_shared<StaticMesh>(
-            std::vector<Vector3> {
-            Vector3(-0.5f, 0.5f, 0.5f),
-            Vector3(0.5f, 0.5f, 0.5f),
-            Vector3(0.5f, -0.5f, 0.5f),
-            Vector3(-0.5f, -0.5f, 0.5f),
+            std::vector<Vertex> {
+            Vertex{ Vector3(-0.5f, 0.5f, 0.5f), Vector2(0.0f, 0.0f)},
+                Vertex{ Vector3(0.5f, 0.5f, 0.5f), Vector2(1.0f, 0.0f) },
+                Vertex{ Vector3(0.5f, -0.5f, 0.5f), Vector2(1.0f, 1.0f) },
+                Vertex{ Vector3(-0.5f, -0.5f, 0.5f), Vector2(0.0f, 1.0f) },
         }, 
             //왼쪽 위부터 시계방향으로 0,1,2,3으로 가정
             std::vector<uint32_t>{0, 1, 2, 0, 2, 3}

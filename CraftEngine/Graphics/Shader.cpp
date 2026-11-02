@@ -60,7 +60,8 @@ namespace Craft
         //정점 셰이더 입력 관련 정보 객체 생성
         D3D11_INPUT_ELEMENT_DESC inputLayoutDesc[] =
         {
-            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,D3D11_INPUT_PER_VERTEX_DATA, 0}
+            {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
         };
 
         //위 객체와 일대일 대응이 되야 함. 레이아웃이 바뀌면 코드를 매번 바꿔야 하는데, 이걸 자동화를 어떻게 할 것인지 고민

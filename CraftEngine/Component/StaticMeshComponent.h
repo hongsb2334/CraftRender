@@ -6,8 +6,7 @@ namespace Craft
 {
     //전방 선언
     class StaticMesh;
-    class Shader;
-
+    class Material;
 
     class StaticMeshComponent : public Component
     {
@@ -20,22 +19,22 @@ namespace Craft
 
 
         //setter
-        
         inline void SetStaticMesh(const std::shared_ptr<StaticMesh>& newMesh)
         {
             staticMesh = newMesh;
         }
-        inline void SetShader(const std::shared_ptr<Shader>& newShader)
+        inline void SetMaterial(const std::shared_ptr<Material>& newMaterial)
         {
-            shader = newShader;
+            material = newMaterial;
         }
+       
 
     private:
         //스태틱 메시
         std::shared_ptr<StaticMesh> staticMesh;
 
-        //셰이더
-        std::shared_ptr<Shader> shader;
+        //머티리얼
+        std::shared_ptr<Material> material;
     };
 }
 
