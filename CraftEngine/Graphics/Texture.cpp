@@ -27,6 +27,7 @@ namespace Craft
 
         //텍스처 바인딩
         context.PSSetShaderResources(slot, 1, &shaderResourceView);
+
         //샘플러 바인딩
         context.PSSetSamplers(slot, 1, &samplerState);
     }

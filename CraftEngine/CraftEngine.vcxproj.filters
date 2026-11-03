@@ -78,6 +78,9 @@
     <ClCompile Include="Graphics\Material.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Core\Input.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Win32Window.h">
@@ -156,6 +159,9 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Material.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Input.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

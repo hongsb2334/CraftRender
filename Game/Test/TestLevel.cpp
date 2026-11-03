@@ -32,17 +32,17 @@ void TestLevel::Initialized()
     auto defaultMaterial = std::make_shared<DefaultMaterial>();
     auto textureMappingMaterial = std::make_shared<TextureMappingMaterial>("Assets/T_Checker.jpg");
 
-    //액터 생성
-    auto left = SpawnActor<TestActor>();
-    left->GetTransform().scale = Vector3::One * 0.4f;
-    left->GetTransform().position.x = -0.5f;
-    
-    
-    //액터에 스태틱 메시 설정
-    left->GetComponent<StaticMeshComponent>()->SetStaticMesh(quad);
-    
-    //셰이더 설정
-    left->GetComponent<StaticMeshComponent>()->SetMaterial(defaultMaterial);
+    ////액터 생성
+    //auto left = SpawnActor<TestActor>();
+    //left->GetTransform().scale = Vector3::One * 0.4f;
+    //left->GetTransform().position.x = -0.5f;
+    //
+    //
+    ////액터에 스태틱 메시 설정
+    //left->GetComponent<StaticMeshComponent>()->SetStaticMesh(quad);
+    //
+    ////셰이더 설정
+    //left->GetComponent<StaticMeshComponent>()->SetMaterial(defaultMaterial);
 
     
     auto right = SpawnActor<TestActor>();

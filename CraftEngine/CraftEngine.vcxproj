@@ -108,6 +108,7 @@
     <ClCompile Include="Component\StaticMeshComponent.cpp" />
     <ClCompile Include="Component\TransformComponent.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
+    <ClCompile Include="Core\Input.cpp" />
     <ClCompile Include="Core\Win32Window.cpp" />
     <ClCompile Include="CraftEnginePCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -135,6 +136,7 @@
     <ClInclude Include="Component\TransformComponent.h" />
     <ClInclude Include="Core\Core.h" />
     <ClInclude Include="Core\Engine.h" />
+    <ClInclude Include="Core\Input.h" />
     <ClInclude Include="Core\Win32Window.h" />
     <ClInclude Include="CraftEnginePCH.h" />
     <ClInclude Include="GameFramework\Actor.h" />
