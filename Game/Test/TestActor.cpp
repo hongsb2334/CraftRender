@@ -37,4 +37,19 @@ void TestActor::Tick(float deltaTime)
     {
         std::cout << "W Key hold\n";
     }
+
+
+    //마우스 입력 테스트
+    if (input.GetMouseButtonDown(0))
+    {
+        std::cout << "Left mouse down\n";
+    }
+    if (input.GetMouseButtonUp(0))
+    {
+        std::cout << "Left mouse Up\n";
+    }
+    if (input.GetMouseButton(0))
+    {
+        std::cout << "Mouse Delta : " << input.GetMouseDeltaX() << ", " << input.GetMouseDeltaY() << "\n";
+    }
 }

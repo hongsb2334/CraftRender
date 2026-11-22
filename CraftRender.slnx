@@ -2,6 +2,7 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
+  <Project Path="CraftAssetImporter/CraftAssetImporter.vcxproj" Id="ae68a423-d88f-42ee-9121-43e5f9482a32" />
   <Project Path="CraftEngine/CraftEngine.vcxproj" Id="bf9886e7-5c10-4a41-96fd-c2da62d3101c" />
   <Project Path="Game/Game.vcxproj" Id="d377156c-2dae-4aa3-89db-ec32ab692d02" />
 </Solution>

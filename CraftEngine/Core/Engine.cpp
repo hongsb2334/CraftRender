@@ -5,6 +5,8 @@
 #include <Graphics/ShaderManager.h>
 #include <Graphics/TextureManager.h>
 #include <cassert>
+#include <windowsx.h>
+
 #if _DEBUG
 #include <iostream>
 #endif
@@ -303,6 +305,111 @@ namespace Craft
         }
         return 0;
 
+        //마우스 왼쪽 버튼 눌림 이벤트
+        case WM_LBUTTONDOWN:
+        {
+            //명시적으로 입력 캡쳐 설정
+            //마우스 포인터가 창을 벗어나는 경우에 포커스를 잃을 수 있는데 이걸 방지하기 위해
+            SetCapture(window);
+
+            //입력 객체에 이벤트 설정
+            if (Input::IsValid())
+            {
+                input->OnMouseButtonDown(0);
+            }
+        }
+        return 0;
+
+        //마우스 왼쪽 버튼 해제 이벤트
+        case WM_LBUTTONUP:
+        {
+            //캡쳐 해제
+            //모든 버튼 클릭이 해제됐는지 추가 확인 필요
+            ReleaseCapture();
+
+            //입력 객체에 이벤트 설정
+            if (Input::IsValid())
+            {
+                input->OnMouseButtonUp(0);
+            }
+        }
+        return 0;
+        
+        //마우스 오른쪽 버튼 눌림 이벤트
+        case WM_RBUTTONDOWN:
+        {
+            //명시적으로 입력 캡쳐 설정
+            //마우스 포인터가 창을 벗어나는 경우에 포커스를 잃을 수 있는데 이걸 방지하기 위해
+            SetCapture(window);
+
+            //입력 객체에 이벤트 설정
+            if (Input::IsValid())
+            {
+                input->OnMouseButtonDown(1);
+            }
+        }
+        return 0;
+
+        //마우스 오른쪽 버튼 해제 이벤트
+        case WM_RBUTTONUP:
+        {
+            //캡쳐 해제
+            //모든 버튼 클릭이 해제됐는지 추가 확인 필요
+            ReleaseCapture();
+
+            //입력 객체에 이벤트 설정
+            if (Input::IsValid())
+            {
+                input->OnMouseButtonUp(1);
+            }
+        }
+        return 0;
+
+        //마우스 오른쪽 버튼 눌림 이벤트
+        case WM_MBUTTONDOWN:
+        {
+            //명시적으로 입력 캡쳐 설정
+            //마우스 포인터가 창을 벗어나는 경우에 포커스를 잃을 수 있는데 이걸 방지하기 위해
+            SetCapture(window);
+
+            //입력 객체에 이벤트 설정
+            if (Input::IsValid())
+            {
+                input->OnMouseButtonDown(2);
+            }
+        }
+        return 0;
+
+        //마우스 오른쪽 버튼 해제 이벤트
+        case WM_MBUTTONUP:
+        {
+            //캡쳐 해제
+            //모든 버튼 클릭이 해제됐는지 추가 확인 필요
+            ReleaseCapture();
+
+            //입력 객체에 이벤트 설정
+            if (Input::IsValid())
+            {
+                input->OnMouseButtonUp(2);
+            }
+        }
+        return 0;
+
+        //마우스 이동 이벤트
+        case WM_MOUSEMOVE:
+        {
+            if (Input::IsValid())
+            {
+                //x 좌표
+                int x = GET_X_LPARAM(lparam);
+                //y 좌표
+                int y = GET_Y_LPARAM(lparam);
+
+                input->SetMousePosition(x, y);
+            }
+        }
+        return 0;
+
         //창이 포커스를 잃어버렸을 때 이벤트 처리
         case WM_KILLFOCUS:
         {
@@ -313,6 +420,8 @@ namespace Craft
             }
         }
         return 0;
+
+
 
         case WM_PAINT:
         {

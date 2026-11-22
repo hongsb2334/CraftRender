@@ -2,6 +2,8 @@
 #include "TestActor.h"
 #include <Component/TransformComponent.h>
 #include <Component/StaticMeshComponent.h>
+#include <Component/CameraMovementComponent.h>
+
 #include <Actor/CameraActor.h>
 //#include <Component/CameraComponent.h>
 
@@ -30,7 +32,7 @@ void TestLevel::Initialized()
 
     //머티리얼 생성
     auto defaultMaterial = std::make_shared<DefaultMaterial>();
-    auto textureMappingMaterial = std::make_shared<TextureMappingMaterial>("Assets/T_Checker.jpg");
+    auto textureMappingMaterial = std::make_shared<TextureMappingMaterial>("Assets/Source/Textures/T_Checker.jpg");
 
     ////액터 생성
     //auto left = SpawnActor<TestActor>();
@@ -59,7 +61,10 @@ void TestLevel::Initialized()
 
     //카메라
     auto camera = SpawnActor<CameraActor>();
+    camera->AddComponent<CameraMovementComponent>();
     camera->GetTransform().position.z = -2.0f;
+
+
 }
 
 //void TestLevel::Draw()
