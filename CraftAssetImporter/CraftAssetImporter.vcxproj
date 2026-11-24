@@ -98,6 +98,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Source\MeshImporter.cpp" />
+    <ClCompile Include="Source\TextureImporter.cpp" />
+    <ClCompile Include="Source\Utility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CraftAssets\AssetTypes.h" />
+    <ClInclude Include="Source\MeshImporter.h" />
+    <ClInclude Include="Source\TextureImporter.h" />
+    <ClInclude Include="Source\Utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
